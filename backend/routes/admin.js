@@ -6,6 +6,10 @@ const Attendance = require('../models/Attendance');
 const auth = require('../middleware/auth');
 const adminAuth = require('../middleware/adminAuth');
 
+
+const { body, validationResult } = require('express-validator');
+const bcrypt = require('bcryptjs'); // Also needed for password hashing
+
 // Middleware to ensure user is admin
 const isAdmin = async (req, res, next) => {
   try {
@@ -411,6 +415,118 @@ router.post('/students/bulk-delete', auth, isAdmin, async (req, res) => {
     });
   }
 });
+
+
+
+// GET /api/admin/instructors - Get all instructors/teachers
+router.get('/instructors', auth, isAdmin, async (req, res) => {
+  try {
+    console.log('👨‍🏫 Loading instructors/teachers...');
+    
+    // Get users with instructor, teacher, OR admin role
+    const instructors = await User.find({ 
+      $or: [
+        { role: 'instructor' },
+        { role: 'teacher' },    // ✅ Add this line!
+        { role: 'admin' }       // Fallback for admins
+      ],
+      isActive: true 
+    }).select('firstName lastName email role');
+
+    console.log('✅ Found instructors/teachers:', instructors.length);
+    console.log('📋 Roles found:', instructors.map(i => i.role));
+
+    res.json({
+      success: true,
+      instructors
+    });
+  } catch (error) {
+    console.error('❌ Error loading instructors:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error loading instructors'
+    });
+  }
+});
+
+
+
+
+
+
+
+// POST /api/admin/instructors - Create new instructor
+router.post('/instructors', [
+  auth,
+  isAdmin,
+  body('firstName').notEmpty().withMessage('First name is required'),
+  body('lastName').notEmpty().withMessage('Last name is required'),
+  body('email').isEmail().withMessage('Valid email is required'),
+  body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters')
+], async (req, res) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Validation failed',
+        errors: errors.array()
+      });
+    }
+
+    const { firstName, lastName, email, password, department } = req.body;
+
+    // Check if instructor already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({
+        success: false,
+        message: 'User with this email already exists'
+      });
+    }
+
+    // Hash password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    // Create instructor
+    const instructor = new User({
+      firstName,
+      lastName,
+      email,
+      password: hashedPassword,
+      role: 'instructor',
+      department: department || 'General',
+      isActive: true,
+      emailVerified: true
+    });
+
+    await instructor.save();
+
+    // Remove password from response
+    const instructorResponse = instructor.toObject();
+    delete instructorResponse.password;
+
+    console.log('✅ Instructor created:', instructor.email);
+
+    res.status(201).json({
+      success: true,
+      message: 'Instructor created successfully',
+      instructor: instructorResponse
+    });
+
+  } catch (error) {
+    console.error('❌ Error creating instructor:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error creating instructor'
+    });
+  }
+});
+
+
+
+
 
 // GET /api/admin/dashboard-stats - Get admin dashboard statistics
 router.get('/dashboard-stats', auth, isAdmin, async (req, res) => {

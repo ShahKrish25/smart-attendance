@@ -12,6 +12,7 @@ import AttendanceScanner from './components/face/AttendanceScanner';
 import StudentManagement from './components/admin/StudentManagement';
 import AttendanceReports from './components/admin/AttendanceReports';
 import './styles/globals.css';
+import ClassManagement from './components/admin/ClassManagement';
 
 // Loading component
 const LoadingSpinner = () => (
@@ -48,12 +49,7 @@ const Dashboard = () => {
           case 'reports':
             return <AttendanceReports />;
           case 'classes':
-            return (
-              <div className="text-center py-12">
-                <h2 className="text-2xl font-bold text-gray-900 mb-4">📚 Class Management</h2>
-                <p className="text-gray-600">Class management features coming next!</p>
-              </div>
-            );
+            return <ClassManagement />;
           case 'face':
             return <FaceRegistration />; // 🎯 Face Registration Component
           case 'profile':
