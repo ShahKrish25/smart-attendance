@@ -11,6 +11,7 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
       { id: 'attendance', icon: '📝', label: 'Attendance', description: 'View & Edit Records' },
       { id: 'reports', icon: '📈', label: 'Reports', description: 'Analytics & Exports' },
       { id: 'classes', icon: '📚', label: 'Classes', description: 'Manage Classes' },
+      { id: 'schedule', icon: '⏰', label: 'schedule', description: 'Manage Classes' },
       { id: 'settings', icon: '⚙️', label: 'Settings', description: 'System Configuration' },
     ],
     teacher: [

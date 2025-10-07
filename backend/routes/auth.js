@@ -192,4 +192,51 @@ router.get('/me', auth, async (req, res) => {
   }
 });
 
+
+// GET /api/auth/face-descriptor/:userId - Get user's face descriptor
+router.get('/face-descriptor/:userId', auth, async (req, res) => {
+  try {
+    const { userId } = req.params;
+    
+    // Security check: Users can only get their own face descriptor
+    if (req.userId !== userId) {
+      return res.status(403).json({
+        success: false,
+        message: 'Access denied. You can only access your own face data.'
+      });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    if (!user.faceDescriptor) {
+      return res.status(404).json({
+        success: false,
+        message: 'Face descriptor not found. Please complete face registration first.'
+      });
+    }
+
+    res.json({
+      success: true,
+      faceDescriptor: user.faceDescriptor
+    });
+
+  } catch (error) {
+    console.error('Error getting face descriptor:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error retrieving face descriptor'
+    });
+  }
+});
+
+
+
+
+
 module.exports = router;

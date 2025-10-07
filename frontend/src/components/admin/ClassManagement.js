@@ -42,7 +42,8 @@ const ClassManagement = () => {
       if (response.success) {
         setClasses(response.classes || []);
         setStats(response.stats || {});
-        console.log('✅ Loaded', response.classes?.length, 'classes');
+        console.log('✅ Loaded stats:', response.classes);
+        // console.log('✅ Loaded', response.classes?.length, 'classes');
       }
     } catch (error) {
       console.error('❌ Error loading classes:', error);
@@ -157,9 +158,9 @@ const ClassManagement = () => {
   // Get enrollment status color
   const getEnrollmentStatusColor = (enrollmentStatus) => {
     switch (enrollmentStatus) {
-      case 'full': return 'bg-red-100 text-red-800';
-      case 'almost_full': return 'bg-yellow-100 text-yellow-800';
-      case 'available': return 'bg-green-100 text-green-800';
+      case 'Full': return 'bg-red-100 text-red-800';
+      case 'Almost_full': return 'bg-yellow-100 text-yellow-800';
+      case 'Open': return 'bg-green-100 text-green-800';
       default: return 'bg-gray-100 text-gray-800';
     }
   };
@@ -167,9 +168,9 @@ const ClassManagement = () => {
   // Get enrollment status text
   const getEnrollmentStatusText = (enrollmentStatus) => {
     switch (enrollmentStatus) {
-      case 'full': return 'Full';
-      case 'almost_full': return 'Almost Full';
-      case 'available': return 'Available';
+      case 'Full': return 'Full';
+      case 'Open' : return 'Open';
+      case 'Almost_full': return 'Almost Full';
       default: return 'Unknown';
     }
   };
@@ -411,7 +412,7 @@ const ClassManagement = () => {
                     <div className="flex justify-between items-center mb-2">
                       <span className="text-sm text-gray-600">Enrollment</span>
                       <span className="text-sm font-semibold text-gray-900">
-                        {classItem.enrollmentCount}/{classItem.capacity}
+                        {classItem.capacity - classItem.availableSlots}/{classItem.capacity}
                       </span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2">

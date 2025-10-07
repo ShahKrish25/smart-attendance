@@ -159,6 +159,13 @@ const StudentManagement = () => {
           <p className="text-gray-600 mt-2">Manage student accounts and information</p>
         </div>
         <button
+          onClick={() => loadStudents()}
+          className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors flex items-center space-x-2"
+        >
+          <span className="text-xl">➕</span>
+          <span>refresh</span>
+        </button>
+        <button
           onClick={() => setShowAddModal(true)}
           className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors flex items-center space-x-2"
         >

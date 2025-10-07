@@ -20,7 +20,7 @@ app.use(helmet());
 // Rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
+  max: 500, // limit each IP to 100 requests per windowMs
   message: {
     success: false,
     message: 'Too many requests from this IP, please try again later.'
@@ -30,7 +30,7 @@ app.use('/api/', limiter);
 
 // CORS configuration
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:3000',
+  origin: process.env.CLIENT_URL || 'http://localhost:3000/',
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
@@ -64,6 +64,9 @@ app.use('/api/admin', require('./routes/admin'));           // MUST be second
 
 app.use('/api/classes', require('./routes/classes'));
 app.use('/api/upload', require('./routes/upload'));
+
+// Add this line with your other routes
+app.use('/api/sessions', require('./routes/sessions'));
 
 
 // Upload error handling middleware

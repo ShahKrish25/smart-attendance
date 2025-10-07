@@ -13,6 +13,7 @@ import StudentManagement from './components/admin/StudentManagement';
 import AttendanceReports from './components/admin/AttendanceReports';
 import './styles/globals.css';
 import ClassManagement from './components/admin/ClassManagement';
+import ClassScheduleCalendar from './components/admin/ClassScheduleCalendar';
 
 // Loading component
 const LoadingSpinner = () => (
@@ -50,6 +51,8 @@ const Dashboard = () => {
             return <AttendanceReports />;
           case 'classes':
             return <ClassManagement />;
+          case 'schedule':
+            return <ClassScheduleCalendar />
           case 'face':
             return <FaceRegistration />; // 🎯 Face Registration Component
           case 'profile':

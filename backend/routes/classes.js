@@ -92,7 +92,35 @@ router.get('/', auth, async (req, res) => {
       console.log('📊 Raw classes found:', classes.length);
       
       // Filter out classes with null instructors (if instructor was deleted)
-      classes = classes.filter(cls => cls.instructor !== null);
+      // classes = classes.filter(cls => cls.instructor !== null);
+
+// gpt code
+// Filter out classes with null instructors (if instructor was deleted)
+classes = classes.filter(cls => cls.instructor !== null);
+
+// Add enrollment status to each class
+classes = classes.map(cls => {
+  const enrolled = cls.students?.length || 0;
+  // const enrollmentStatus = enrolled >= cls.capacity ? 'Full' : 'Open';
+
+  let enrollmentStatus;
+  if (enrolled >= cls.capacity) {
+    enrollmentStatus = 'Full';
+  } else if (enrolled >= cls.capacity * 0.8) {
+    enrollmentStatus = 'Almost_full';
+  } else {
+    enrollmentStatus = 'Open';
+  }
+
+  return {
+    ...cls,
+    enrollmentStatus,
+    availableSlots: cls.capacity - enrolled
+  };
+});
+
+// gpt code
+
       
       console.log('📊 Classes after filtering nulls:', classes.length);
 
@@ -269,11 +297,31 @@ router.get('/:id', auth, async (req, res) => {
     .sort({ createdAt: -1 })
     .limit(20);
 
-    res.json({
-      success: true,
-      class: classData,
-      recentAttendance
-    });
+    // res.json({
+    //   success: true,
+    //   class: classData,
+    //   recentAttendance
+    // });
+
+    
+    // gpt code
+    const enrolled = classData.students?.length || 0;
+const enrollmentStatus = enrolled >= classData.capacity ? 'Full' : 'Open';
+
+res.json({
+  success: true,
+  class: {
+    ...classData.toObject(),
+    enrollmentStatus,
+    availableSlots: classData.capacity - enrolled
+  },
+  recentAttendance
+});
+
+    // gpt code
+
+
+
 
   } catch (error) {
     console.error('❌ Error fetching class details:', error);
