@@ -20,6 +20,7 @@ import {
 } from "date-fns";
 import SessionModal from "./SessionModal";
 import LiveSessionModal from "./LiveSessionModal";
+import ShowSessionHistory from "./ShowSessionHistory";
 
 const ClassScheduleCalendar = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -31,6 +32,9 @@ const ClassScheduleCalendar = () => {
   const [showSessionModal, setShowSessionModal] = useState(false);
   const [editingSession, setEditingSession] = useState(null);
   const [showLiveSessionModal, setShowLiveSessionModal] = useState(false);
+  const [showSessionHistoryModal, setShowSessionHistoryModal] = useState(false);
+  const [selectedHistorySessionId, setSelectedHistorySessionId] =
+    useState(null);
   const [activeSessions, setActiveSessions] = useState([]);
   const [stats, setStats] = useState({
     total: 0,
@@ -535,7 +539,7 @@ const ClassScheduleCalendar = () => {
             )}
 
             {/* ✅ NEW: Delete Button */}
-            {session.status !== "active" && (
+            {session.status !== "active" && !canStart && (
               <button
                 onClick={(e) => {
                   e.stopPropagation();
@@ -545,6 +549,19 @@ const ClassScheduleCalendar = () => {
                 title="Delete session"
               >
                 🗑️
+              </button>
+            )}
+            {session.status !== "active" && !canStart && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setSelectedHistorySessionId(session._id);
+                  setShowSessionHistoryModal(true);
+                }}
+                className="px-2 py-1 bg-green-600 text-white rounded text-xs hover:bg-red-700 transition-colors"
+                title="Delete session"
+              >
+                🔀History
               </button>
             )}
           </div>
@@ -828,6 +845,12 @@ const ClassScheduleCalendar = () => {
         onClose={() => setShowLiveSessionModal(false)}
         activeSessions={activeSessions}
         onSessionEnd={(sessionId) => handleSessionAction(sessionId, "end")}
+      />
+
+      <ShowSessionHistory
+        isOpen={showSessionHistoryModal}
+        onClose={() => setShowSessionHistoryModal(false)}
+        sessionId={selectedHistorySessionId}
       />
     </div>
   );
